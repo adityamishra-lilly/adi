@@ -1,0 +1,33 @@
+---
+import SocialLinks from './SocialLinks.astro';
+import { site } from '../config/site';
+
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="container bar">
+    <p>© {year} {site.name}. Built in public.</p>
+    <SocialLinks variant="compact" label="Social links (footer)" />
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--space-8);
+    border-top: 1px solid var(--border);
+  }
+
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-block: var(--space-6);
+  }
+
+  p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+</style>

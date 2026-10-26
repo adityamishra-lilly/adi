@@ -1,0 +1,148 @@
+---
+import { Image } from 'astro:assets';
+import { getEntry, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionCard from '../components/SectionCard.astro';
+import SocialLinks from '../components/SocialLinks.astro';
+import { site } from '../config/site';
+import { sections } from '../config/sections';
+import profile from '../assets/profile.jpg';
+
+const bio = await getEntry('home', 'bio');
+if (!bio) throw new Error('Missing src/content/home/bio.md');
+const { Content: Bio } = await render(bio);
+---
+<BaseLayout>
+  <div class="container">
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="intro">
+        <h1 id="hero-heading">Hey, I am {site.shortName}</h1>
+        <p class="tagline">{site.tagline}</p>
+        <div class="bio">
+          <Bio />
+        </div>
+        <SocialLinks />
+      </div>
+      <Image
+        src={profile}
+        alt={`Portrait of ${site.name}`}
+        widths={[240, 360, 480, 720]}
+        sizes="(min-width: 900px) 360px, 160px"
+        loading="eager"
+        fetchpriority="high"
+        class="photo"
+      />
+    </section>
+
+    <section class="explore" aria-labelledby="explore-heading">
+      <h2 id="explore-heading">Explore</h2>
+      <p class="subheading">Things I build, read and write about, shared as I go.</p>
+      <ul class="grid">
+        {
+          sections.map((section) => (
+            <li>
+              <SectionCard section={section} />
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .hero {
+    display: grid;
+    gap: var(--space-5);
+    padding-block: var(--space-6);
+  }
+
+  .photo {
+    order: -1;
+    width: 100%;
+    max-width: 160px;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius-photo);
+    border: 1px solid var(--border);
+  }
+
+  h1,
+  h2,
+  .tagline {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  h1 {
+    font-size: var(--step-hero);
+    letter-spacing: -0.01em;
+  }
+
+  .tagline {
+    margin-top: var(--space-4);
+    color: var(--accent);
+    font-size: var(--step-1);
+    line-height: 1.4;
+  }
+
+  .bio {
+    max-width: var(--prose-width);
+    margin-block: var(--space-6);
+  }
+
+  .bio :global(p + p) {
+    margin-top: var(--space-4);
+  }
+
+  .explore {
+    padding-top: var(--space-7);
+  }
+
+  h2 {
+    font-size: var(--step-3);
+  }
+
+  .subheading {
+    margin-top: var(--space-2);
+    color: var(--text-muted);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-top: var(--space-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 600px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .hero {
+      grid-template-columns: 1.7fr 1fr;
+      align-items: start;
+      gap: var(--space-7);
+      padding-top: var(--space-7);
+    }
+
+    .photo {
+      order: 0;
+      max-width: 360px;
+      justify-self: end;
+      margin-top: var(--space-8);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>
