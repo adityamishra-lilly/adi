@@ -9,12 +9,10 @@ export interface SocialLink {
 export const site = {
   name: "Aditya Mishra",
   shortName: "Adi",
-  // TODO: confirm tagline.
   tagline: "distributed systems, infra and federated learning. everlearning.",
   description:
-    "Aditya Mishra — CS student at the University of Surrey and Software Engineer at Eli Lilly, writing about distributed systems, platforms and applied AI.",
-  // TODO: domain not decided yet; keep in sync with `site` in astro.config.mjs.
-  url: "https://example.com",
+    "Aditya Mishra — CS student at the University of Surrey, writing about distributed systems, platforms and applied AI.",
+  url: "https://am-labs.dev",
   socials: [
     // TODO: replace placeholder URLs.
     {
