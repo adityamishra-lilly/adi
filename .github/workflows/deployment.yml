@@ -27,7 +27,7 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
 
       - run: npm ci
@@ -74,4 +74,5 @@ jobs:
           cache-to: type=gha,mode=max
 
       - if: github.event_name != 'pull_request'
-        run: echo "Deploy with: \`${IMAGE}:${{ steps.meta.outputs.tag }}\`" >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          echo "Deploy with: \`${IMAGE}:${{ steps.meta.outputs.tag }}\`" >> "$GITHUB_STEP_SUMMARY"
