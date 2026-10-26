@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# TODO: update once the domain is decided.
+Sitemap: https://example.com/sitemap-index.xml

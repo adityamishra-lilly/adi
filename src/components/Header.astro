@@ -1,0 +1,93 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import { site } from '../config/site';
+import { liveSections } from '../config/sections';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+<header class="site-header">
+  <div class="container bar">
+    <a href="/" class="wordmark" aria-current={isActive('/') ? 'page' : undefined}>{site.name}</a>
+    <div class="actions">
+      {
+        liveSections.length > 0 && (
+          <nav aria-label="Primary">
+            <ul>
+              {liveSections.map((section) => (
+                <li>
+                  <a href={section.href} aria-current={isActive(section.href) ? 'page' : undefined}>
+                    {section.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )
+      }
+      <ThemeToggle />
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-height: 4.5rem;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  a {
+    position: relative;
+    color: var(--text);
+    text-decoration: none;
+    transition: color var(--transition);
+  }
+
+  a:hover {
+    color: var(--accent);
+  }
+
+  .wordmark {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--step-2);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  nav a {
+    font-weight: 600;
+  }
+
+  a[aria-current='page']::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.35rem;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+</style>

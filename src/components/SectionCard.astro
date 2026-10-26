@@ -1,0 +1,109 @@
+---
+import ArrowRight from './icons/ArrowRight.astro';
+import type { Section } from '../config/sections';
+
+interface Props {
+  section: Section;
+}
+
+const { section } = Astro.props;
+const live = section.status === 'live';
+const Root = live ? 'a' : 'article';
+---
+<Root
+  class:list={['card', { soon: !live }]}
+  href={live ? section.href : undefined}
+  aria-label={live ? undefined : `${section.title}, coming soon`}
+>
+  <div class="meta">
+    <span class="label">{section.label}</span>
+    {live ? section.count !== undefined && <span class="count">{section.count}</span> : <span class="badge">Coming soon</span>}
+  </div>
+  <h3 class="title">{section.title}</h3>
+  <p class="description">{section.description}</p>
+  <div class="footer">
+    <span>{live ? `View ${section.title.toLowerCase()}` : 'In progress'}</span>
+    {live && <ArrowRight size={16} />}
+  </div>
+</Root>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: var(--space-5);
+    color: var(--text);
+    text-decoration: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    transition: border-color var(--transition);
+  }
+
+  a.card:hover,
+  a.card:focus-visible {
+    border-color: var(--accent);
+  }
+
+  a.card:hover .title {
+    color: var(--accent);
+  }
+
+  .meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+
+  .label {
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .count {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .badge {
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .title {
+    font-size: var(--step-1);
+    font-weight: 600;
+    transition: color var(--transition);
+  }
+
+  .description {
+    flex: 1;
+    margin-top: var(--space-2);
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    min-height: calc(2 * 1.55em);
+  }
+
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: var(--space-5);
+    padding-top: var(--space-3);
+    border-top: 1px dashed var(--border);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: 500;
+  }
+
+  .soon .footer {
+    color: var(--text-muted);
+  }
+</style>

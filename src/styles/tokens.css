@@ -1,0 +1,68 @@
+/* Design tokens. Dark is the default theme; light applies via data-theme or OS preference. */
+:root {
+  color-scheme: dark;
+  --bg: #1d1f21;
+  --surface: #26292c;
+  --border: #383c40;
+  --text: #e8e6e3;
+  --text-muted: #9aa0a6;
+  --link: #7fb2ff;
+  --accent: #f0a830;
+
+  --font-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --font-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  /* ~1.25 type scale */
+  --step--1: 0.8rem;
+  --step-0: 1rem;
+  --step-1: 1.25rem;
+  --step-2: 1.5625rem;
+  --step-3: 1.953rem;
+  --step-hero: clamp(2.25rem, 5vw, 3.25rem);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+
+  --radius-card: 8px;
+  --radius-pill: 6px;
+  --radius-photo: 16px;
+
+  --max-width: 1200px;
+  --gutter: clamp(1rem, 4vw, 2rem);
+  --prose-width: 70ch;
+
+  --focus-ring: 2px solid var(--accent);
+  --transition: 150ms ease;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #fafaf7;
+  --surface: #ffffff;
+  --border: #e2e2dc;
+  --text: #1d1f21;
+  --text-muted: #5f6368;
+  --link: #1a5fd0;
+  --accent: #a35f00;
+}
+
+/* No-JS fallback: follow the OS when no theme has been set. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    color-scheme: light;
+    --bg: #fafaf7;
+    --surface: #ffffff;
+    --border: #e2e2dc;
+    --text: #1d1f21;
+    --text-muted: #5f6368;
+    --link: #1a5fd0;
+    --accent: #a35f00;
+  }
+}

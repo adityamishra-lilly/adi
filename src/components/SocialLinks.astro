@@ -1,0 +1,68 @@
+---
+import { site } from '../config/site';
+import { icons } from './icons';
+
+interface Props {
+  /** `pill` shows icon + label at body size; `compact` is the smaller footer version. */
+  variant?: 'pill' | 'compact';
+  label?: string;
+}
+
+const { variant = 'pill', label = 'Social links' } = Astro.props;
+const isExternal = (href: string) => /^https?:\/\//.test(href);
+---
+<ul class:list={['socials', variant]} aria-label={label}>
+  {
+    site.socials.map((social) => {
+      const Icon = icons[social.icon];
+      return (
+        <li>
+          <a href={social.href} rel={isExternal(social.href) ? 'me noopener' : undefined}>
+            <Icon size={variant === 'compact' ? 16 : 18} />
+            <span>{social.label}</span>
+          </a>
+        </li>
+      );
+    })
+  }
+</ul>
+
+<style>
+  .socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    color: var(--text);
+    font-weight: 500;
+    text-decoration: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    transition:
+      border-color var(--transition),
+      color var(--transition);
+  }
+
+  a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .compact {
+    gap: var(--space-2);
+  }
+
+  .compact a {
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.9rem;
+  }
+</style>
