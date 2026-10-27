@@ -14,7 +14,6 @@ export const site = {
     "Aditya Mishra — CS student at the University of Surrey, writing about distributed systems, platforms and applied AI.",
   url: "https://am-labs.dev",
   socials: [
-    // TODO: replace placeholder URLs.
     {
       label: "GitHub",
       href: "https://github.com/adityamishra-lilly",
@@ -22,10 +21,9 @@ export const site = {
     },
     {
       label: "LinkedIn",
-      href: "https://www.linkedin.com/in/TODO",
+      href: "https://www.linkedin.com/in/aditya-mishra-3b8a46292/",
       icon: "linkedin",
     },
-    { label: "Email", href: "mailto:TODO@example.com", icon: "mail" },
-    { label: "CV", href: "/cv.pdf", icon: "file" },
+    { label: "Email", href: "mailto:mishra.adi2005@gmail.com", icon: "mail" },
   ] satisfies SocialLink[],
 } as const;
