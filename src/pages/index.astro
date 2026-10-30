@@ -6,11 +6,18 @@ import SectionCard from '../components/SectionCard.astro';
 import SocialLinks from '../components/SocialLinks.astro';
 import { site } from '../config/site';
 import { sections } from '../config/sections';
+import { getNotes } from '../lib/notes';
 import profile from '../assets/profile.jpg';
 
 const bio = await getEntry('home', 'bio');
 if (!bio) throw new Error('Missing src/content/home/bio.md');
 const { Content: Bio } = await render(bio);
+
+// Live counts from the content collections, keyed by section id.
+const counts: Record<string, number> = {
+  notes: (await getNotes()).length,
+};
+const cards = sections.map((section) => ({ ...section, count: counts[section.id] ?? section.count }));
 ---
 <BaseLayout>
   <div class="container">
@@ -39,7 +46,7 @@ const { Content: Bio } = await render(bio);
       <p class="subheading">Things I build, read and write about, shared as I go.</p>
       <ul class="grid">
         {
-          sections.map((section) => (
+          cards.map((section) => (
             <li>
               <SectionCard section={section} />
             </li>

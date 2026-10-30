@@ -1,0 +1,290 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import TagList from '../../components/TagList.astro';
+import ArrowLeft from '../../components/icons/ArrowLeft.astro';
+import ArrowRight from '../../components/icons/ArrowRight.astro';
+import { site } from '../../config/site';
+import { categoryHref, formatLongDate, getNotes, noteHref, readingTime } from '../../lib/notes';
+import profile from '../../assets/profile.jpg';
+
+export const getStaticPaths = (async () => {
+  const notes = await getNotes();
+  // Notes are sorted newest first, so the older note is the next index.
+  return notes.map((note, i) => ({
+    params: { id: note.id },
+    props: { note, older: notes[i + 1], newer: notes[i - 1] },
+  }));
+}) satisfies GetStaticPaths;
+
+const { note, older, newer } = Astro.props;
+const { Content } = await render(note);
+const { title, date, category, tags, tldr, description } = note.data;
+const minutes = readingTime(note.body);
+---
+<BaseLayout title={title} description={description ?? tldr ?? site.description}>
+  <link slot="head" rel="alternate" type="application/rss+xml" title="Notes RSS feed" href="/notes/rss.xml" />
+  <article class="container note">
+    <Breadcrumbs
+      items={[
+        { label: 'Home', href: '/' },
+        { label: 'Notes', href: '/notes/' },
+        { label: category, href: categoryHref(category) },
+        { label: title },
+      ]}
+    />
+
+    <header>
+      <h1>{title}</h1>
+      <TagList category={category} tags={tags} linkCategory />
+      <div class="byline">
+        <Image src={profile} alt="" widths={[48, 96]} sizes="48px" class="avatar" />
+        <div>
+          <p class="author">{site.name}</p>
+          <p class="meta">
+            <time datetime={date.toISOString().slice(0, 10)}>{formatLongDate(date)}</time>
+            <span aria-hidden="true"> • </span>
+            {minutes} min read
+          </p>
+        </div>
+      </div>
+    </header>
+
+    {
+      tldr && (
+        <aside class="tldr" aria-label="TL;DR">
+          <span class="tldr-label">TL;DR</span>
+          <p>{tldr}</p>
+        </aside>
+      )
+    }
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {
+      (older || newer) && (
+        <nav class="pager" aria-label="More notes">
+          {older ? (
+            <a href={noteHref(older)} class="prev">
+              <span class="pager-label">
+                <ArrowLeft size={14} /> Previous
+              </span>
+              <span class="pager-title">{older.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )}
+          {newer && (
+            <a href={noteHref(newer)} class="next">
+              <span class="pager-label">
+                Next <ArrowRight size={14} />
+              </span>
+              <span class="pager-title">{newer.data.title}</span>
+            </a>
+          )}
+        </nav>
+      )
+    }
+  </article>
+</BaseLayout>
+
+<style>
+  .note {
+    max-width: calc(var(--prose-width) + 2 * var(--gutter));
+    padding-top: var(--space-5);
+  }
+
+  header {
+    margin-block: var(--space-5) var(--space-6);
+  }
+
+  h1 {
+    margin-bottom: var(--space-5);
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: var(--step-hero);
+    letter-spacing: -0.01em;
+  }
+
+  .byline {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+  }
+
+  .byline :global(.avatar) {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+  }
+
+  .author {
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .meta {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+
+  .tldr {
+    margin-bottom: var(--space-6);
+    padding: var(--space-4) var(--space-5);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-card);
+  }
+
+  .tldr-label {
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+  }
+
+  .prose :global(> * + *) {
+    margin-top: var(--space-5);
+  }
+
+  .prose :global(h2),
+  .prose :global(h3) {
+    margin-top: var(--space-7);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  .prose :global(h2) {
+    font-size: var(--step-2);
+  }
+
+  .prose :global(h3) {
+    font-size: var(--step-1);
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    padding-left: var(--space-5);
+  }
+
+  .prose :global(li + li) {
+    margin-top: var(--space-2);
+  }
+
+  .prose :global(blockquote) {
+    padding-left: var(--space-4);
+    color: var(--text-muted);
+    border-left: 3px solid var(--border);
+  }
+
+  .prose :global(:not(pre) > code) {
+    padding: 0.1em 0.35em;
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+
+  .prose :global(pre) {
+    padding: var(--space-4);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+  }
+
+  .prose :global(table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  .prose :global(th),
+  .prose :global(td) {
+    padding: var(--space-2) var(--space-4);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .prose :global(th) {
+    font-weight: 600;
+  }
+
+  .prose :global(img) {
+    border-radius: var(--radius-card);
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    margin-top: var(--space-8);
+    padding-top: var(--space-5);
+    border-top: 1px dashed var(--border);
+  }
+
+  .pager a {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    color: var(--text);
+    text-decoration: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    transition: border-color var(--transition);
+  }
+
+  .pager a:hover {
+    border-color: var(--accent);
+  }
+
+  .pager-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+
+  .pager-title {
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .next {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  @media (min-width: 600px) {
+    .pager {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .next {
+      grid-column: 2;
+    }
+  }
+</style>

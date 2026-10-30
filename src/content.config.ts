@@ -7,4 +7,19 @@ const home = defineCollection({
   schema: z.object({}),
 });
 
-export const collections = { home };
+const notes = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/notes' }),
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    category: z.string(),
+    tags: z.array(z.string()).default([]),
+    draft: z.boolean().default(false),
+    /** Optional one-line summary shown above the note body. */
+    tldr: z.string().optional(),
+    /** Used for the meta description and the RSS item; falls back to the site description. */
+    description: z.string().optional(),
+  }),
+});
+
+export const collections = { home, notes };
