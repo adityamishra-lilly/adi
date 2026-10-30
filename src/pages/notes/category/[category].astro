@@ -1,0 +1,23 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import NoteList from '../../../components/NoteList.astro';
+import { sections } from '../../../config/sections';
+import { getCategories, getNotes } from '../../../lib/notes';
+
+export const getStaticPaths = (async () => {
+  const notes = await getNotes();
+  return getCategories(notes).map((category) => ({
+    params: { category: category.slug },
+    props: { notes, name: category.name },
+  }));
+}) satisfies GetStaticPaths;
+
+const { notes, name } = Astro.props;
+const { category } = Astro.params;
+const description = sections.find((s) => s.id === 'notes')?.description ?? '';
+---
+<BaseLayout title={`${name} · Notes`} description={`Notes on ${name}. ${description}`}>
+  <link slot="head" rel="alternate" type="application/rss+xml" title="Notes RSS feed" href="/notes/rss.xml" />
+  <NoteList notes={notes} activeCategory={category} description={description} />
+</BaseLayout>

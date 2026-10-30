@@ -39,7 +39,7 @@ export const sections: Section[] = [
     description:
       "Quick takeaways, snippets and things I learned along the way.",
     href: "/notes/",
-    status: "soon",
+    status: "live",
   },
   {
     id: "papershelf",

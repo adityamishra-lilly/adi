@@ -8,4 +8,11 @@ export default defineConfig({
   build: {
     inlineStylesheets: "auto",
   },
+  markdown: {
+    // Highlighted at build time; colours switch with data-theme in global.css.
+    shikiConfig: {
+      themes: { light: "github-light", dark: "github-dark" },
+      defaultColor: false,
+    },
+  },
 });

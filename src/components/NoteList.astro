@@ -1,0 +1,143 @@
+---
+import CategoryChips from './CategoryChips.astro';
+import NoteRow from './NoteRow.astro';
+import Rss from './icons/Rss.astro';
+import { getCategories, groupByYear, type Note } from '../lib/notes';
+
+interface Props {
+  /** Every published note; used for the total and the chip counts. */
+  notes: Note[];
+  /** Slug of the category to filter by. */
+  activeCategory?: string;
+  description: string;
+}
+
+const { notes, activeCategory, description } = Astro.props;
+const categories = getCategories(notes);
+const activeName = categories.find((c) => c.slug === activeCategory)?.name;
+const shown = activeName ? notes.filter((n) => n.data.category === activeName) : notes;
+const years = groupByYear(shown);
+---
+<div class="container notes">
+  <header class="intro">
+    <div class="title-row">
+      <h1>Notes <span class="total">({notes.length})</span></h1>
+      <a class="rss" href="/notes/rss.xml">RSS Feed <Rss size={14} /></a>
+    </div>
+    <p class="description">{description}</p>
+  </header>
+
+  <CategoryChips categories={categories} total={notes.length} active={activeCategory} baseHref="/notes/" />
+
+  {
+    years.length === 0 ? (
+      <p class="empty">No notes yet. Check back soon.</p>
+    ) : (
+      years.map(([year, items]) => (
+        <section class="year" aria-labelledby={`year-${year}`}>
+          <h2 id={`year-${year}`}>
+            {year} <span class="year-count">({items.length})</span>
+          </h2>
+          <ul class="rows">
+            {items.map((note) => (
+              <li>
+                <NoteRow note={note} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    )
+  }
+</div>
+
+<style>
+  .notes {
+    padding-top: var(--space-7);
+  }
+
+  .intro {
+    padding-bottom: var(--space-5);
+    margin-bottom: var(--space-5);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: var(--step-hero);
+    letter-spacing: -0.01em;
+  }
+
+  .total {
+    color: var(--text-muted);
+    font-size: 0.7em;
+  }
+
+  .rss {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-3);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-decoration: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    transition:
+      border-color var(--transition),
+      color var(--transition);
+  }
+
+  .rss:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .description {
+    max-width: var(--prose-width);
+    margin-top: var(--space-4);
+  }
+
+  .year {
+    margin-top: var(--space-7);
+  }
+
+  h2 {
+    padding-bottom: var(--space-3);
+    margin-bottom: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--step-1);
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .year-count {
+    color: var(--text-muted);
+    font-size: 0.6em;
+    font-weight: 400;
+  }
+
+  .rows {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0;
+    margin-inline: calc(-1 * var(--space-2));
+    list-style: none;
+  }
+
+  .empty {
+    margin-top: var(--space-7);
+    color: var(--text-muted);
+  }
+</style>

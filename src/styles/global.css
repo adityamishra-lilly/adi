@@ -125,3 +125,25 @@ a:hover {
     scroll-behavior: auto !important;
   }
 }
+
+/* Shiki code blocks: pick the token colours for the active theme. Dark is the default. */
+.astro-code {
+  background-color: var(--surface);
+}
+
+.astro-code,
+.astro-code span {
+  color: var(--shiki-dark);
+}
+
+:root[data-theme='light'] .astro-code,
+:root[data-theme='light'] .astro-code span {
+  color: var(--shiki-light);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .astro-code,
+  :root:not([data-theme]) .astro-code span {
+    color: var(--shiki-light);
+  }
+}

@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NoteList from '../../components/NoteList.astro';
+import { sections } from '../../config/sections';
+import { getNotes } from '../../lib/notes';
+
+const notes = await getNotes();
+const description = sections.find((s) => s.id === 'notes')?.description ?? '';
+---
+<BaseLayout title="Notes" description={description}>
+  <link slot="head" rel="alternate" type="application/rss+xml" title="Notes RSS feed" href="/notes/rss.xml" />
+  <NoteList notes={notes} description={description} />
+</BaseLayout>

@@ -1,0 +1,53 @@
+---
+import { categoryHref } from '../lib/notes';
+
+interface Props {
+  category: string;
+  tags: string[];
+  /** Link the category badge to its filtered list. Off in list rows, where the row title is the only link. */
+  linkCategory?: boolean;
+}
+
+const { category, tags, linkCategory = false } = Astro.props;
+---
+<ul class="tag-list" aria-label="Category and tags">
+  <li>
+    {linkCategory ? <a class="category" href={categoryHref(category)}>{category}</a> : <span class="category">{category}</span>}
+  </li>
+  {tags.map((tag) => <li class="tag">#{tag}</li>)}
+</ul>
+
+<style>
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  .category {
+    display: inline-block;
+    padding: 0 var(--space-2);
+    color: var(--text);
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1.8;
+    text-decoration: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    transition: border-color var(--transition);
+  }
+
+  a.category:hover {
+    border-color: var(--accent);
+  }
+
+  .tag {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+</style>
